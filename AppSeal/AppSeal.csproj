@@ -55,7 +55,6 @@
   <ItemGroup>
     <Compile Include="DomainModel\AppSealConfig.cs" />
     <Compile Include="DomainModel\SealProfile.cs" />
-    <Compile Include="DomainModel\State.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

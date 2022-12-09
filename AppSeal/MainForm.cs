@@ -12,7 +12,6 @@ namespace AppSeal
 {
 	public partial class MainForm : Form
 	{
-		readonly State _state = State.Load();
 		readonly AppSealConfig _appSealConfig;
 
 		public MainForm(AppSealConfig appSealConfig, string filename)
@@ -23,9 +22,7 @@ namespace AppSeal
 			Text = string.Format("AppSeal {0}", version);
 
 			AddProfiles();
-
-			var index = CbProfile.FindString(_state.DefaultProfileName);
-			CbProfile.SelectedIndex = index < 0 ? 0 : index;
+			CbProfile.SelectedIndex = 0;
 
 			TbSignTool.Text = appSealConfig.SignTool;
 
@@ -60,22 +57,15 @@ namespace AppSeal
 		{
 			using (var ofd = new OpenFileDialog
 			{
-				Filter = "Exe files|*.exe",
+				Filter = "Application Files (*.EXE,*.MSI)|*.exe;*.msi|All files (*.*)|*.*",
 			})
 			{
-				if (!string.IsNullOrWhiteSpace(_state.DefaultFolder))
-				{
-					ofd.InitialDirectory = _state.DefaultFolder;
-				}
-
 				if (ofd.ShowDialog() != DialogResult.OK)
 				{
 					return string.Empty;
 				}
 
-				var file = ofd.FileName;
-				_state.DefaultFolder = Path.GetDirectoryName(file);
-				return file;
+				return ofd.FileName;
 			}
 		}
 
@@ -93,8 +83,6 @@ namespace AppSeal
 		void Seal(string file)
 		{
 			var profile = (SealProfile) CbProfile.Items[CbProfile.SelectedIndex];
-			_state.DefaultProfileName = profile.Name;
-			State.Save(_state);
 
 			var builder = new StringBuilder();
 			builder.AppendLine("@echo off");
